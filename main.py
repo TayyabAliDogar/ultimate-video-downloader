@@ -6,6 +6,7 @@ import subprocess
 import time
 import json
 import urllib.request
+import webbrowser
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -48,7 +49,9 @@ SCHEDULE_FILE = str(HOME / "Downloads" / "VideoDownloader" / ".schedule.json")
 DOWNLOAD_PATH = str(HOME / "Downloads" / "VideoDownloader")
 MAX_RETRIES   = 3
 
-# ── Video URL patterns ─────────────────────────────────────────────────────────
+GITHUB_URL       = "https://github.com/TayyabAliDogar/ultimate-video-downloader"
+GITHUB_ISSUES    = "https://github.com/TayyabAliDogar/ultimate-video-downloader/issues/new"
+
 VIDEO_DOMAINS = [
     "youtube.com", "youtu.be", "instagram.com", "tiktok.com",
     "facebook.com", "fb.watch", "twitter.com", "x.com",
@@ -135,7 +138,7 @@ class DownloadItem:
         self.subtitles      = subtitles
         self.playlist       = playlist
         self.speed_limit    = speed_limit
-        self.scheduled_time = scheduled_time  # datetime or None
+        self.scheduled_time = scheduled_time
         self.status         = STATUS_SCHEDULED if scheduled_time else STATUS_WAITING
         self.progress       = 0.0
         self.speed          = ""
@@ -204,68 +207,49 @@ class App(ctk.CTk):
         self._load_stats()
         self._restore_schedule()
 
-    # ══════════════════════════════════════════════════════════════════════════
-    #  CLIPBOARD WATCHER
-    # ══════════════════════════════════════════════════════════════════════════
+    # ── Clipboard Watcher ─────────────────────────────────────────────────────
     def _clipboard_watcher(self):
-        """Silently watches clipboard every second for video URLs."""
         while True:
             try:
                 time.sleep(1)
                 if not self._clipboard_enabled:
                     continue
                 text = self.clipboard_get().strip()
-                if (text and text != self._last_clipboard
-                        and is_video_url(text)):
+                if text and text != self._last_clipboard and is_video_url(text):
                     self._last_clipboard = text
                     self.after(0, lambda t=text: self._on_clipboard_url(t))
             except Exception:
                 time.sleep(2)
 
     def _on_clipboard_url(self, url):
-        """Called when a video URL is detected in clipboard."""
-        # Show toast notification
         self._show_clipboard_toast(url)
-        # Auto-fill URL field
         self.url_input.delete(0, "end")
         self.url_input.insert(0, url)
-        # Switch to download tab and fetch info
         self._switch_tab("download")
         self._fetch_info()
 
     def _show_clipboard_toast(self, url):
-        """Show a small popup notification for clipboard detection."""
         toast = ctk.CTkToplevel(self)
         toast.overrideredirect(True)
         toast.attributes("-topmost", True)
         toast.configure(fg_color=CARD)
-
-        # Position bottom-right
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         toast.geometry(f"340x80+{sw-360}+{sh-120}")
-
         frame = ctk.CTkFrame(toast, fg_color=CARD2, corner_radius=12)
         frame.pack(fill="both", expand=True, padx=2, pady=2)
-
         ctk.CTkLabel(frame, text="📋  Video URL Detected!",
                      font=ctk.CTkFont(size=13, weight="bold"),
-                     text_color=ACCENT2).pack(padx=14, pady=(10, 2), anchor="w")
-
+                     text_color=ACCENT2).pack(padx=14, pady=(10,2), anchor="w")
         domain = [d for d in VIDEO_DOMAINS if d in url.lower()]
         site = domain[0].replace(".com","").title() if domain else "Unknown"
-        ctk.CTkLabel(frame, text=f"From {site} — auto-filled & ready to download",
+        ctk.CTkLabel(frame, text=f"From {site} — auto-filled & ready!",
                      font=ctk.CTkFont(size=11), text_color=SUBTEXT).pack(
-            padx=14, pady=(0, 10), anchor="w")
-
-        # Auto-close after 3 seconds
+            padx=14, pady=(0,10), anchor="w")
         toast.after(3000, toast.destroy)
 
-    # ══════════════════════════════════════════════════════════════════════════
-    #  SCHEDULE WATCHER
-    # ══════════════════════════════════════════════════════════════════════════
+    # ── Schedule Watcher ──────────────────────────────────────────────────────
     def _schedule_watcher(self):
-        """Checks every minute if any scheduled download is due."""
         while True:
             try:
                 now = datetime.now()
@@ -277,16 +261,14 @@ class App(ctk.CTk):
                             item.status = STATUS_WAITING
                             item.scheduled_time = None
                             self.after(0, lambda it=item: self._update_item(it))
-                            threading.Thread(
-                                target=self._run_item,
-                                args=(item,), daemon=True).start()
-                            self.log(f"⏰ Scheduled download started: {item.title[:45]}")
+                            threading.Thread(target=self._run_item,
+                                           args=(item,), daemon=True).start()
+                            self.log(f"⏰ Started: {item.title[:45]}")
             except Exception:
                 pass
             time.sleep(30)
 
     def _restore_schedule(self):
-        """Restore scheduled downloads from file on startup."""
         if not self.schedule_list:
             return
         now = datetime.now()
@@ -295,8 +277,7 @@ class App(ctk.CTk):
                 st = datetime.fromisoformat(s['time'])
                 if st > now:
                     item = DownloadItem(
-                        url=s['url'],
-                        quality=s.get('quality', '1080p'),
+                        url=s['url'], quality=s.get('quality','1080p'),
                         cookies=self.settings.get('cookies', COOKIES_PATH),
                         dl_path=self.settings.get('download_path', DOWNLOAD_PATH),
                         scheduled_time=st)
@@ -306,8 +287,6 @@ class App(ctk.CTk):
             except Exception:
                 pass
 
-    # ══════════════════════════════════════════════════════════════════════════
-    #  UI BUILD
     # ══════════════════════════════════════════════════════════════════════════
     def _build_ui(self):
         self.grid_columnconfigure(0, weight=1)
@@ -345,10 +324,8 @@ class App(ctk.CTk):
                                          text_color=SUBTEXT)
         self.stats_label.pack(anchor="e", pady=(0,4))
 
-        # Clipboard toggle in header
         cb_row = ctk.CTkFrame(right, fg_color="transparent")
         cb_row.pack(anchor="e")
-
         self.cb_toggle = ctk.CTkSwitch(
             cb_row, text="📋 Auto-detect",
             font=ctk.CTkFont(size=10),
@@ -372,8 +349,10 @@ class App(ctk.CTk):
         save_json(SETTINGS_FILE, self.settings)
         color = ACCENT2 if self._clipboard_enabled else DIM
         self.cb_toggle.configure(text_color=color)
-        status = "ON" if self._clipboard_enabled else "OFF"
-        self.log(f"📋 Clipboard auto-detect: {status}")
+        self.cb_badge.configure(
+            text="📋 Clipboard: ON" if self._clipboard_enabled else "📋 Clipboard: OFF",
+            text_color=ACCENT2 if self._clipboard_enabled else DIM)
+        self.log(f"📋 Clipboard: {'ON' if self._clipboard_enabled else 'OFF'}")
 
     def _build_body(self):
         body = ctk.CTkFrame(self, fg_color="transparent")
@@ -394,14 +373,14 @@ class App(ctk.CTk):
 
         self._nav_btns = {}
         nav_items = [
-            ("⬇  Download",   "download",  ACCENT),
-            ("📋  Queue",      "queue",     PURPLE),
-            ("⏰  Schedule",   "schedule",  ORANGE),
-            ("🖼  Thumbnails", "thumb",     PINK),
-            ("🕘  History",    "history",   BTN_UP),
-            ("⚙  Settings",   "settings",  DIM),
+            ("⬇  Download",   "download"),
+            ("📋  Queue",      "queue"),
+            ("⏰  Schedule",   "schedule"),
+            ("🖼  Thumbnails", "thumb"),
+            ("🕘  History",    "history"),
+            ("⚙  Settings",   "settings"),
         ]
-        for label, name, _ in nav_items:
+        for label, name in nav_items:
             btn = ctk.CTkButton(
                 sb, text=label, anchor="w",
                 height=42, width=165,
@@ -412,10 +391,12 @@ class App(ctk.CTk):
             btn.pack(padx=16, pady=3)
             self._nav_btns[name] = btn
 
+        # Divider
         ctk.CTkLabel(sb, text="─────────────",
                      font=ctk.CTkFont(size=10), text_color=DIM).pack(
             padx=16, pady=(16,4), anchor="w")
 
+        # Status badges
         exists = os.path.exists(self.settings['cookies'])
         self.ck_badge = ctk.CTkLabel(
             sb,
@@ -429,8 +410,26 @@ class App(ctk.CTk):
             text="📋 Clipboard: ON" if self._clipboard_enabled else "📋 Clipboard: OFF",
             font=ctk.CTkFont(size=10),
             text_color=ACCENT2 if self._clipboard_enabled else DIM)
-        self.cb_badge.pack(padx=20, pady=2, anchor="w")
+        self.cb_badge.pack(padx=20, pady=(2,12), anchor="w")
 
+        # ── Bug Report + GitHub buttons ───────────────────────────────────────
+        ctk.CTkButton(sb, text="🐛  Report a Bug",
+                      height=36, width=165,
+                      font=ctk.CTkFont(size=12, weight="bold"),
+                      fg_color=DANGER, hover_color="#a93226",
+                      corner_radius=10,
+                      command=lambda: webbrowser.open(GITHUB_ISSUES)
+                      ).pack(padx=16, pady=(0,6))
+
+        ctk.CTkButton(sb, text="⭐  Star on GitHub",
+                      height=36, width=165,
+                      font=ctk.CTkFont(size=12),
+                      fg_color=BTN_GRAY, hover_color="#3d3d6e",
+                      corner_radius=10,
+                      command=lambda: webbrowser.open(GITHUB_URL)
+                      ).pack(padx=16, pady=(0,8))
+
+        # Footer
         ctk.CTkLabel(sb, text="© 2026 Ultimate DL",
                      font=ctk.CTkFont(size=9), text_color=DIM).pack(
             side="bottom", padx=16, pady=12)
@@ -479,11 +478,10 @@ class App(ctk.CTk):
             self.dl_frame, fg_color="#0a2a1a", corner_radius=10, height=0)
         self.cb_banner.grid(row=0, column=0, sticky="ew", pady=(0,6))
         self.cb_banner.grid_propagate(False)
-        self.cb_banner_lbl = ctk.CTkLabel(
-            self.cb_banner,
-            text="📋  Clipboard monitoring active — copy any video URL to auto-fill!",
-            font=ctk.CTkFont(size=11), text_color=ACCENT2)
-        self.cb_banner_lbl.place(relx=0.5, rely=0.5, anchor="center")
+        ctk.CTkLabel(self.cb_banner,
+                     text="📋  Clipboard monitoring active — copy any video URL to auto-fill!",
+                     font=ctk.CTkFont(size=11), text_color=ACCENT2).place(
+            relx=0.5, rely=0.5, anchor="center")
         self._update_cb_banner()
 
         # URL Card
@@ -518,7 +516,6 @@ class App(ctk.CTk):
         self.url_input.bind("<Return>", lambda e: self._fetch_info())
         self.url_input.bind("<KeyRelease>", self._on_url_type)
 
-        # Batch
         bh = ctk.CTkFrame(uc, fg_color="transparent")
         bh.grid(row=2, column=0, padx=18, pady=(4,4), sticky="ew")
         ctk.CTkLabel(bh, text="📦  BATCH  (one URL per line)",
@@ -594,7 +591,6 @@ class App(ctk.CTk):
                             corner_radius=5).pack(padx=14, pady=2, anchor="w")
         ctk.CTkLabel(qc, text="", height=8).pack()
 
-        # Buttons
         dc = ctk.CTkFrame(opt, fg_color="transparent")
         dc.grid(row=0, column=1, padx=10, pady=16, sticky="ew")
         dc.grid_columnconfigure(0, weight=1)
@@ -689,10 +685,7 @@ class App(ctk.CTk):
         self.log_box.grid(row=1, column=0, padx=18, pady=(0,16), sticky="ew")
 
     def _update_cb_banner(self):
-        if self._clipboard_enabled:
-            self.cb_banner.configure(height=36)
-        else:
-            self.cb_banner.configure(height=0)
+        self.cb_banner.configure(height=36 if self._clipboard_enabled else 0)
 
     # ── SCHEDULE DIALOG ───────────────────────────────────────────────────────
     def _open_schedule_dialog(self):
@@ -703,7 +696,7 @@ class App(ctk.CTk):
 
         dialog = ctk.CTkToplevel(self)
         dialog.title("⏰ Schedule Download")
-        dialog.geometry("420x320")
+        dialog.geometry("420x300")
         dialog.configure(fg_color=BG)
         dialog.attributes("-topmost", True)
         dialog.grab_set()
@@ -711,17 +704,16 @@ class App(ctk.CTk):
         ctk.CTkLabel(dialog, text="⏰  Schedule Download",
                      font=ctk.CTkFont(size=16, weight="bold"),
                      text_color=TEXT).pack(padx=24, pady=(20,4), anchor="w")
-        ctk.CTkLabel(dialog, text=url[:55] + "…" if len(url) > 55 else url,
+        ctk.CTkLabel(dialog, text=url[:55]+"…" if len(url)>55 else url,
                      font=ctk.CTkFont(size=11), text_color=SUBTEXT).pack(
-            padx=24, pady=(0,16), anchor="w")
+            padx=24, pady=(0,12), anchor="w")
 
-        # Quick options
         ctk.CTkLabel(dialog, text="Quick schedule:",
                      font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=SUBTEXT).pack(padx=24, anchor="w")
 
-        quick_row = ctk.CTkFrame(dialog, fg_color="transparent")
-        quick_row.pack(padx=24, pady=8, anchor="w")
+        qr = ctk.CTkFrame(dialog, fg_color="transparent")
+        qr.pack(padx=24, pady=8, anchor="w")
 
         selected_time = [None]
 
@@ -729,15 +721,15 @@ class App(ctk.CTk):
             t = datetime.now() + timedelta(minutes=minutes)
             selected_time[0] = t
             time_lbl.configure(
-                text=f"⏰ Scheduled for: {t.strftime('%d %b %Y  %H:%M')}",
+                text=f"⏰ Scheduled: {t.strftime('%d %b %Y  %H:%M')}",
                 text_color=ORANGE)
 
-        for label, mins in [("30 min", 30), ("1 hour", 60),
-                             ("2 hours", 120), ("Tonight 11PM", None)]:
+        for label, mins in [("30 min",30),("1 hour",60),("2 hours",120),("Tonight",None)]:
             if mins is None:
-                mins_val = (datetime.now().replace(hour=23, minute=0) - datetime.now()).seconds // 60
-                mins = max(1, mins_val)
-            ctk.CTkButton(quick_row, text=label, width=85, height=30,
+                now = datetime.now()
+                tonight = now.replace(hour=23, minute=0, second=0)
+                mins = max(1, int((tonight-now).total_seconds()//60))
+            ctk.CTkButton(qr, text=label, width=88, height=30,
                           font=ctk.CTkFont(size=11), fg_color=CARD2,
                           hover_color=CARD3, corner_radius=8,
                           command=lambda m=mins: set_quick(m)).pack(
@@ -758,7 +750,7 @@ class App(ctk.CTk):
                       height=42, font=ctk.CTkFont(size=14, weight="bold"),
                       fg_color=ORANGE, hover_color="#b45309",
                       corner_radius=10, command=confirm).pack(
-            padx=24, pady=16, fill="x")
+            padx=24, pady=12, fill="x")
 
     def _schedule_download(self, url, scheduled_time):
         ck = self.settings.get('cookies', COOKIES_PATH)
@@ -771,16 +763,11 @@ class App(ctk.CTk):
             scheduled_time=scheduled_time)
         with self.queue_lock:
             self.download_queue.append(item)
-
-        # Save to file
         self.schedule_list.append({
-            'url':     url,
-            'quality': self.quality_var.get(),
-            'time':    scheduled_time.isoformat(),
-            'title':   item.title,
+            'url': url, 'quality': self.quality_var.get(),
+            'time': scheduled_time.isoformat(), 'title': item.title,
         })
         save_json(SCHEDULE_FILE, self.schedule_list)
-
         time_str = scheduled_time.strftime("%d %b %Y  %H:%M")
         self.log(f"⏰ Scheduled: {item.title[:45]}  →  {time_str}")
         self._set_status(f"⏰ Scheduled for {time_str}", ORANGE)
@@ -823,9 +810,7 @@ class App(ctk.CTk):
         for w in self.queue_scroll.winfo_children():
             w.destroy()
         self._item_widgets.clear()
-
-        active = [i for i in self.download_queue
-                  if i.status != STATUS_SCHEDULED]
+        active = [i for i in self.download_queue if i.status != STATUS_SCHEDULED]
         if not active:
             ctk.CTkLabel(self.queue_scroll,
                          text="Queue is empty!\nAdd URLs from Download tab.",
@@ -861,7 +846,7 @@ class App(ctk.CTk):
 
         pb = ctk.CTkProgressBar(info, height=6, corner_radius=3,
                                  fg_color=CARD2, progress_color=ACCENT)
-        pb.set(item.progress / 100)
+        pb.set(item.progress/100)
         pb.grid(row=1, column=0, sticky="ew", pady=(4,2))
 
         ml = ctk.CTkLabel(info,
@@ -898,7 +883,7 @@ class App(ctk.CTk):
         color = STATUS_COLORS.get(item.status, BTN_GRAY)
         try:
             w['status'].configure(text=item.status, fg_color=color)
-            w['progress'].set(item.progress / 100)
+            w['progress'].set(item.progress/100)
             w['title'].configure(text=item.title[:72])
             w['meta'].configure(
                 text=f"{item.quality}  ·  {item.speed}  ·  ETA {item.eta}")
@@ -931,37 +916,30 @@ class App(ctk.CTk):
     def _refresh_schedule(self):
         for w in self.sc_scroll.winfo_children():
             w.destroy()
-
         scheduled = [i for i in self.download_queue
                      if i.status == STATUS_SCHEDULED and i.scheduled_time]
-
         if not scheduled:
             ctk.CTkLabel(self.sc_scroll,
-                         text="No scheduled downloads!\n\nUse the ⏰ Schedule button\non the Download tab.",
+                         text="No scheduled downloads!\n\nUse ⏰ Schedule button\non the Download tab.",
                          font=ctk.CTkFont(size=14), text_color=DIM,
                          justify="center").pack(pady=50)
             return
-
         for i, item in enumerate(scheduled):
             row = ctk.CTkFrame(self.sc_scroll, fg_color=CARD, corner_radius=12)
             row.grid(row=i, column=0, sticky="ew", pady=4)
             row.grid_columnconfigure(1, weight=1)
-
             ctk.CTkLabel(row, text="⏰",
                          font=ctk.CTkFont(size=24)).grid(
                 row=0, column=0, padx=(16,10), pady=14)
-
             ic = ctk.CTkFrame(row, fg_color="transparent")
             ic.grid(row=0, column=1, sticky="ew", pady=10)
             ctk.CTkLabel(ic, text=item.title[:65],
                          font=ctk.CTkFont(size=13, weight="bold"),
                          text_color=TEXT, anchor="w").pack(anchor="w")
-            time_str = item.scheduled_time.strftime("%d %b %Y  %H:%M") if item.scheduled_time else "?"
-            ctk.CTkLabel(ic,
-                         text=f"⏰ {time_str}  ·  {item.quality}",
+            time_str = item.scheduled_time.strftime("%d %b %Y  %H:%M")
+            ctk.CTkLabel(ic, text=f"⏰ {time_str}  ·  {item.quality}",
                          font=ctk.CTkFont(size=11), text_color=ORANGE,
                          anchor="w").pack(anchor="w")
-
             ctk.CTkButton(row, text="✕ Cancel", width=85, height=30,
                           font=ctk.CTkFont(size=11), fg_color=BTN_RED,
                           hover_color="#a93226", corner_radius=8,
@@ -981,7 +959,7 @@ class App(ctk.CTk):
                      font=ctk.CTkFont(size=15, weight="bold"),
                      text_color=TEXT).pack(padx=18, pady=(12,4), anchor="w")
         ctk.CTkLabel(hdr,
-                     text="Download full-resolution video thumbnails — no video download needed!",
+                     text="Download full-resolution thumbnails — no video download needed!",
                      font=ctk.CTkFont(size=11), text_color=DIM).pack(
             padx=18, pady=(0,12), anchor="w")
 
@@ -999,7 +977,7 @@ class App(ctk.CTk):
         th_row.grid_columnconfigure(0, weight=1)
 
         self.th_url = ctk.CTkEntry(th_row,
-                                    placeholder_text="Paste video URL to download thumbnail…",
+                                    placeholder_text="Paste video URL…",
                                     height=42, font=ctk.CTkFont(size=13),
                                     fg_color=CARD2, border_color=DIM,
                                     border_width=1, text_color=TEXT)
@@ -1036,34 +1014,33 @@ class App(ctk.CTk):
     def _do_fetch_thumb(self, url):
         try:
             ck = self.settings.get('cookies', COOKIES_PATH)
-            opts = {'quiet': True, 'no_warnings': True,
-                    'skip_download': True, 'noplaylist': True}
+            opts = {'quiet':True,'no_warnings':True,'skip_download':True,'noplaylist':True}
             if os.path.exists(ck):
                 opts['cookiefile'] = ck
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(url, download=False)
-            thumb_url = info.get('thumbnail', '')
-            title     = info.get('title', 'thumbnail')
+            thumb_url = info.get('thumbnail','')
+            title     = info.get('title','thumbnail')
             if not thumb_url:
                 self.after(0, lambda: self.th_preview.configure(text="✖ No thumbnail found"))
                 return
-            req = urllib.request.Request(thumb_url, headers={'User-Agent': 'Mozilla/5.0'})
+            req = urllib.request.Request(thumb_url, headers={'User-Agent':'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=10) as r:
                 data = r.read()
             self._th_img_data = (data, title)
             img = Image.open(io.BytesIO(data)).convert("RGBA")
             w, h = img.size
             nw = min(600, w)
-            nh = int(h * nw / w)
-            img = img.resize((nw, nh), Image.LANCZOS)
+            nh = int(h*nw/w)
+            img = img.resize((nw,nh), Image.LANCZOS)
             mask = Image.new('L', img.size, 0)
             draw = ImageDraw.Draw(mask)
             draw.rounded_rectangle([0,0,*img.size], radius=14, fill=255)
             img.putalpha(mask)
-            ctk_img = ctk.CTkImage(light_image=img, dark_image=img, size=(nw, nh))
+            ctk_img = ctk.CTkImage(light_image=img, dark_image=img, size=(nw,nh))
             self.after(0, lambda: (
                 self.th_preview.configure(text="", image=ctk_img),
-                setattr(self, '_th_ctk_img', ctk_img),
+                setattr(self,'_th_ctk_img', ctk_img),
                 self.th_save_btn.configure(state="normal")))
         except Exception as e:
             self.after(0, lambda: self.th_preview.configure(
@@ -1079,7 +1056,7 @@ class App(ctk.CTk):
         with open(path, 'wb') as f:
             f.write(data)
         self.log(f"✔ Thumbnail saved!")
-        self.th_preview.configure(text=f"✔ Saved to Downloads folder!")
+        self.th_preview.configure(text="✔ Saved to Downloads folder!")
 
     # ── HISTORY TAB ───────────────────────────────────────────────────────────
     def _build_history_tab(self):
@@ -1108,22 +1085,19 @@ class App(ctk.CTk):
         for w in self.hist_scroll.winfo_children():
             w.destroy()
         if not self.history:
-            ctk.CTkLabel(self.hist_scroll,
-                         text="No downloads yet!",
+            ctk.CTkLabel(self.hist_scroll, text="No downloads yet!",
                          font=ctk.CTkFont(size=14), text_color=DIM).pack(pady=50)
             return
         for i, item in enumerate(reversed(self.history)):
             row = ctk.CTkFrame(self.hist_scroll, fg_color=CARD, corner_radius=12)
             row.grid(row=i, column=0, sticky="ew", pady=4)
             row.grid_columnconfigure(1, weight=1)
-
             plat = item.get('platform','?')[:2].upper()
             ctk.CTkLabel(row, text=plat,
                          font=ctk.CTkFont(size=11, weight="bold"),
                          fg_color=ACCENT, corner_radius=6,
                          text_color="white", width=38, height=38).grid(
                 row=0, column=0, padx=(14,10), pady=12)
-
             ic = ctk.CTkFrame(row, fg_color="transparent")
             ic.grid(row=0, column=1, sticky="ew", pady=10)
             ctk.CTkLabel(ic, text=item.get('title','Unknown')[:72],
@@ -1133,7 +1107,6 @@ class App(ctk.CTk):
                          text=f"🎬 {item.get('quality','?')}  ·  📅 {item.get('date','?')}  ·  ⏱ {item.get('duration','?')}",
                          font=ctk.CTkFont(size=11), text_color=DIM,
                          anchor="w").pack(anchor="w")
-
             ctk.CTkButton(row, text="⬇ Again", width=85, height=30,
                           font=ctk.CTkFont(size=11), fg_color=BTN_DL,
                           hover_color="#2d4abf", corner_radius=8,
@@ -1147,7 +1120,7 @@ class App(ctk.CTk):
 
     def _redownload(self, url):
         self._switch_tab("download")
-        self.url_input.delete(0, "end")
+        self.url_input.delete(0,"end")
         self.url_input.insert(0, url)
         self._fetch_info()
 
@@ -1166,10 +1139,9 @@ class App(ctk.CTk):
                      font=ctk.CTkFont(size=12, weight="bold"),
                      text_color=ACCENT2).grid(row=0, column=0, padx=18, pady=(14,4), sticky="w")
         ctk.CTkLabel(cb,
-                     text="Automatically detect video URLs when you copy them from any browser or app",
+                     text="Automatically detect video URLs when copied from any browser or app",
                      font=ctk.CTkFont(size=11), text_color=DIM).grid(
             row=1, column=0, padx=18, pady=(0,12), sticky="w")
-
         cb_row = ctk.CTkFrame(cb, fg_color="transparent")
         cb_row.grid(row=2, column=0, padx=18, pady=(0,16), sticky="ew")
         self.cb_setting_switch = ctk.CTkSwitch(
@@ -1225,11 +1197,11 @@ class App(ctk.CTk):
                                            button_color=ORANGE)
         self.speed_slider.set(self.settings.get('speed_limit',0))
         self.speed_slider.grid(row=0, column=0, sticky="ew")
-        self.speed_val_lbl = ctk.CTkLabel(sl_row,
-                                           text="Unlimited" if self.settings.get('speed_limit',0)==0
-                                           else f"{int(self.settings['speed_limit'])} MB/s",
-                                           font=ctk.CTkFont(size=12),
-                                           text_color=ORANGE, width=100)
+        self.speed_val_lbl = ctk.CTkLabel(
+            sl_row,
+            text="Unlimited" if self.settings.get('speed_limit',0)==0
+            else f"{int(self.settings['speed_limit'])} MB/s",
+            font=ctk.CTkFont(size=12), text_color=ORANGE, width=100)
         self.speed_val_lbl.grid(row=0, column=1, padx=(12,0))
         self.speed_slider.configure(command=self._on_speed_change)
 
@@ -1282,10 +1254,21 @@ class App(ctk.CTk):
                           "Built with Python · CustomTkinter · yt-dlp · FFmpeg\n"
                           "Supports YouTube, Instagram, TikTok, Facebook, Twitter & 1000+ sites",
                      font=ctk.CTkFont(size=12), text_color=SUBTEXT,
-                     justify="left").pack(padx=18, pady=(0,16), anchor="w")
+                     justify="left").pack(padx=18, pady=(0,8), anchor="w")
 
-    # ══════════════════════════════════════════════════════════════════════════
-    #  HELPERS
+        # GitHub buttons in about section
+        gh_row = ctk.CTkFrame(ab, fg_color="transparent")
+        gh_row.pack(padx=18, pady=(0,16), anchor="w")
+        ctk.CTkButton(gh_row, text="🐛 Report Bug", width=130, height=32,
+                      font=ctk.CTkFont(size=12), fg_color=DANGER,
+                      hover_color="#a93226", corner_radius=8,
+                      command=lambda: webbrowser.open(GITHUB_ISSUES)).pack(
+            side="left", padx=(0,8))
+        ctk.CTkButton(gh_row, text="⭐ Star on GitHub", width=140, height=32,
+                      font=ctk.CTkFont(size=12), fg_color=BTN_GRAY,
+                      hover_color="#3d3d6e", corner_radius=8,
+                      command=lambda: webbrowser.open(GITHUB_URL)).pack(side="left")
+
     # ══════════════════════════════════════════════════════════════════════════
     def _on_url_type(self, event=None):
         if self._fetch_timer:
@@ -1295,7 +1278,7 @@ class App(ctk.CTk):
     def _paste_url(self):
         try:
             text = self.clipboard_get().strip()
-            self.url_input.delete(0, "end")
+            self.url_input.delete(0,"end")
             self.url_input.insert(0, text)
             self._fetch_info()
         except Exception:
@@ -1316,17 +1299,15 @@ class App(ctk.CTk):
                 opts['cookiefile'] = ck
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(clean, download=False)
-
             title     = info.get('title','Unknown')
-            dur       = info.get('duration', 0)
+            dur       = info.get('duration',0)
             uploader  = info.get('uploader', info.get('channel','?'))
-            views     = info.get('view_count', 0)
+            views     = info.get('view_count',0)
             extractor = info.get('extractor_key','Unknown')
             thumb     = info.get('thumbnail','')
             dur_str   = f"{int(dur//60)}:{int(dur%60):02d}" if dur else "?"
             meta = f"👤 {uploader}   ⏱ {dur_str}"
             if views: meta += f"   👁 {views:,}"
-
             self.after(0, lambda: self._show_preview(title, meta, extractor, thumb))
         except Exception:
             self.after(0, self._hide_preview)
@@ -1338,8 +1319,7 @@ class App(ctk.CTk):
         plat_colors = {'Youtube':DANGER,'Instagram':PINK,'TikTok':TEXT,
                        'Facebook':ACCENT,'Twitter':ACCENT}
         color = plat_colors.get(platform, ACCENT)
-        self.prev_plat.configure(text=f"  {platform}  ",
-                                  fg_color=color, corner_radius=6)
+        self.prev_plat.configure(text=f"  {platform}  ", fg_color=color, corner_radius=6)
         if thumb_url:
             threading.Thread(target=self._load_thumb, args=(thumb_url,), daemon=True).start()
 
@@ -1427,7 +1407,6 @@ class App(ctk.CTk):
         self.after(0, lambda: self.stats_label.configure(
             text=f"📥 {today} today  ·  {total} total downloads"))
 
-    # ── Queue ops ─────────────────────────────────────────────────────────────
     def _add_single(self):
         url = self.url_input.get().strip()
         if not url:
@@ -1455,7 +1434,7 @@ class App(ctk.CTk):
     def _enqueue(self, url, scheduled_time=None):
         ck = self.settings.get('cookies', COOKIES_PATH)
         dl = self.settings.get('download_path', DOWNLOAD_PATH)
-        sp = int(self.speed_slider.get()) * 1024 * 1024 if hasattr(self,'speed_slider') and self.speed_slider.get()>0 else 0
+        sp = int(self.speed_slider.get())*1024*1024 if hasattr(self,'speed_slider') and self.speed_slider.get()>0 else 0
         item = DownloadItem(
             url=url, quality=self.quality_var.get(),
             cookies=ck, dl_path=dl,
@@ -1510,7 +1489,6 @@ class App(ctk.CTk):
                 if i.status not in [STATUS_DONE, STATUS_CANCELLED, STATUS_FAILED]]
         self._refresh_queue()
 
-    # ── Download engine ───────────────────────────────────────────────────────
     def _run_item(self, item):
         for attempt in range(1, MAX_RETRIES+1):
             if item.cancelled:
@@ -1518,7 +1496,7 @@ class App(ctk.CTk):
             if attempt > 1:
                 item.status = f"⟳ Retry {attempt}/{MAX_RETRIES}"
                 self.after(0, lambda: self._update_item(item))
-                time.sleep(attempt * 3)
+                time.sleep(attempt*3)
             if self._do_download(item):
                 break
         if not item.cancelled and item.status != STATUS_DONE:
@@ -1579,7 +1557,7 @@ class App(ctk.CTk):
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info      = ydl.extract_info(item.url, download=False)
                 item.title= info.get('title', item.title)
-                dur       = info.get('duration', 0)
+                dur       = info.get('duration',0)
                 platform  = info.get('extractor_key','Unknown')
                 self.after(0, lambda: self._update_item(item))
                 self.log(f"● {item.title[:55]}")
@@ -1637,7 +1615,6 @@ class App(ctk.CTk):
             item.status = STATUS_MERGING
             self.after(0, lambda: self._update_item(item))
 
-    # ── yt-dlp update ─────────────────────────────────────────────────────────
     def _auto_update(self):
         try:
             subprocess.run([sys.executable,'-m','pip','install','--upgrade','yt-dlp'],
