@@ -1,266 +1,271 @@
- # ⬇️ Ultimate Video Downloader v5.1 ULTRA
-https://drive.google.com/file/d/1yVfNl1FA-Cst6oLupWL0ifmR6BdYYoz3/view?usp=drive_link
+<div align="center">
 
-**The most powerful FREE video downloader for Windows**
+# ⬇️ Ultimate Video Downloader
 
-A feature-rich, modern video downloader built with Python and CustomTkinter. Download videos from YouTube, Instagram, TikTok, Facebook, Twitter, and 1000+ other platforms with advanced features like auto clipboard detection, scheduled downloads, batch processing, and more.
+### The most powerful **FREE** video downloader for Windows
 
-![Version](https://img.shields.io/badge/version-5.1%20ULTRA-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
+[![Version](https://img.shields.io/badge/Version-5.1%20ULTRA-4f8ef7?style=for-the-badge&logo=github)](https://github.com/TayyabAliDogar/ultimate-video-downloader/releases)
+[![Free](https://img.shields.io/badge/Price-FREE%20Forever-00d68f?style=for-the-badge)](https://github.com/TayyabAliDogar/ultimate-video-downloader/releases)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078d4?style=for-the-badge&logo=windows)](https://github.com/TayyabAliDogar/ultimate-video-downloader/releases)
+[![License](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)](LICENSE)
+
+<br>
+
+**Download videos from YouTube, Instagram, TikTok, Facebook, Twitter & 1000+ sites**
+**in stunning HD/4K quality — completely FREE, no subscriptions, no limits!**
+
+<br>
+
+## 📥 Download Now — No Installation Required!
+
+### [⬇️ Click Here to Download UltimateVideoDownloader.exe](https://drive.google.com/file/d/1yVfNl1FA-Cst6oLupWL0ifmR6BdYYoz3/view?usp=drive_link)
+
+> ✅ Everything bundled — Python · FFmpeg · All libraries
+> ✅ Just download & double-click — works on any Windows PC!
+
+</div>
+
+---
+
+## ⚠️ First Time Setup — Windows Security Warning
+
+When you run the app for the first time, Windows may show:
+
+> *"Windows protected your PC — Unknown publisher"*
+
+**This is completely normal** for new open-source apps without a paid certificate.
+The app is **100% safe** — source code is publicly available for anyone to verify.
+
+### Fix in 2 simple steps:
+```
+1. Click "More info"
+2. Click "Run anyway"
+```
+> 💡 This warning only appears **once** — never again after that!
 
 ---
 
 ## ✨ Features
 
-### Core Features
-- ✅ **Auto Clipboard Detection** - Automatically detects video URLs when copied to clipboard
-- ✅ **Scheduled Downloads** - Schedule downloads for later (30 min, 1 hour, 2 hours, custom time)
-- ✅ **Batch Download** - Download multiple videos at once (one URL per line)
-- ✅ **Pause/Resume** - Full control over active downloads
-- ✅ **Concurrent Downloads** - Download up to 5 videos simultaneously
-- ✅ **Auto-Retry** - Automatically retries failed downloads up to 3 times
-- ✅ **Single Instance Lock** - Prevents multiple app instances
+<table>
+<tr>
+<td>
 
-### Quality & Format Options
-- ✅ **4K Quality (2160p)** - Ultra HD downloads
-- ✅ **1080p / 720p / 480p / 360p** - Multiple quality options
-- ✅ **Best Quality** - Automatically selects highest available quality
-- ✅ **Audio Only (MP3)** - Extract audio in MP3 format
-- ✅ **Subtitle Download** - Download subtitles with videos
-- ✅ **Full Playlist Support** - Download entire playlists
+### 🚀 Smart Downloads
+- 📋 **Auto Clipboard Detection** — Copy any URL, app auto-fills it
+- ⏰ **Scheduled Downloads** — Set downloads for later
+- 📦 **Batch Download** — Multiple URLs at once
+- ⏸️ **Pause / Resume** — Full download control
+- 🔀 **Concurrent Downloads** — Up to 5 at once
+- 🔄 **Auto-Retry** — 3 automatic retries on failure
 
-### Advanced Features
-- ✅ **Thumbnail Downloader** - Download full-resolution video thumbnails separately
-- ✅ **Download History** - Track all your downloads with metadata
-- ✅ **Speed Limiter** - Limit download speed (1-10 MB/s)
-- ✅ **Video Preview** - See video info, thumbnail, and metadata before downloading
-- ✅ **Cookie Support** - Use cookies.txt for HD quality and private videos
-- ✅ **Dark/Light/System Theme** - Choose your preferred appearance
+</td>
+<td>
 
-### User Interface
-- 🎨 Modern, clean CustomTkinter interface
-- 📊 Real-time progress tracking with speed and ETA
-- 📋 Comprehensive download queue management
-- 📝 Detailed download logs
-- 🔔 Toast notifications for clipboard detection
+### 🎬 Quality Options
+- 🔵 **4K (2160p)** — Ultra HD
+- 🟢 **1080p Full HD** — Crystal clear
+- 🟡 **720p / 480p / 360p** — Flexible options
+- 🎵 **Audio Only (MP3)** — Music extraction
+- 📝 **Subtitles** — Auto-download captions
+- 📋 **Full Playlist** — Entire playlist at once
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 🎨 Professional UI
+- 🌑 **Dark / Light / System Theme**
+- 📊 **Real-time Speed & ETA**
+- 🖼️ **Video Preview** — Thumbnail before download
+- 📝 **Download Log** — Detailed activity log
+- 🔔 **Toast Notifications** — URL detection alerts
+
+</td>
+<td>
+
+### ⚙️ Advanced Tools
+- 🖼️ **Thumbnail Downloader** — Save thumbnails separately
+- 🕘 **Download History** — Track all downloads
+- ⚡ **Speed Limiter** — Control bandwidth usage
+- 🍪 **Cookie Support** — HD quality & private videos
+- 🐛 **Bug Report Button** — One-click bug reporting
+- ⭐ **GitHub Integration** — Star & contribute easily
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 How to Use
+
+### Basic Download
+```
+1. Open the app
+2. Paste video URL  (or just copy it — auto-detection works!)
+3. Select quality   (1080p recommended)
+4. Click ⬇ DOWNLOAD NOW
+5. Done! Saved to: ~/Downloads/VideoDownloader/
+```
+
+### Batch Download
+```
+1. Paste multiple URLs in the BATCH box (one per line)
+2. Click 📦 ADD BATCH TO QUEUE
+3. All videos download automatically!
+```
+
+### Schedule a Download
+```
+1. Paste URL
+2. Click ⏰ SCHEDULE DOWNLOAD
+3. Choose time: 30 min / 1 hour / 2 hours / Tonight
+4. App downloads automatically at that time!
+```
+
+### Download Thumbnails Only
+```
+1. Go to 🖼 Thumbnails tab
+2. Paste video URL
+3. Click Get Thumbnail → Preview → Save!
+```
 
 ---
 
 ## 🌐 Supported Sites
 
-This application uses **yt-dlp** and supports **1000+ websites** including:
-
-- **YouTube** - Videos, playlists, live streams
-- **Instagram** - Posts, reels, stories
-- **TikTok** - Videos and profiles
-- **Facebook** - Videos and watch content
-- **Twitter/X** - Video tweets
-- **Vimeo** - All video content
-- **Dailymotion** - Videos and playlists
-- **Twitch** - VODs and clips
-- **Reddit** - Video posts
-- **SoundCloud** - Audio tracks
-- **Bilibili** - Chinese video platform
-- **And 1000+ more sites!**
-
-For a complete list, visit: [yt-dlp supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+| Platform | Type |
+|----------|------|
+| **YouTube** | Videos, Playlists, Live Streams, Shorts |
+| **Instagram** | Reels, Posts, Stories |
+| **TikTok** | Videos, Profiles |
+| **Facebook** | Videos, Watch |
+| **Twitter / X** | Video Tweets |
+| **Vimeo** | All Videos |
+| **Dailymotion** | Videos & Playlists |
+| **Twitch** | VODs & Clips |
+| **Reddit** | Video Posts |
+| **SoundCloud** | Audio Tracks |
+| **Bilibili** | Chinese Videos |
+| **1000+ more** | [See full list](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) |
 
 ---
 
-## 📥 Installation
+## 🍪 Enable HD Quality (Optional but Recommended)
 
-### Option 1: Download Executable (Recommended)
-1. Download the latest `.exe` file from the [Releases](../../releases) page
-2. Run the executable - no installation required!
-3. Start downloading videos immediately
+For best YouTube quality, add cookies:
 
-### Option 2: Run from Source
+```
+1. Install Chrome extension: "Get cookies.txt LOCALLY"
+2. Go to YouTube → Login to your account
+3. Click extension → Export cookies.txt
+4. Save to: C:\Users\YourName\cookies.txt
+5. App → Settings → Verify cookie path
+6. You'll see: "✔ HD Quality Enabled!"
+```
 
-#### Requirements
-- **Python 3.10+** (Python 3.11 or 3.12 recommended)
-- **FFmpeg** (required for video merging and audio extraction)
-- **Windows 10/11**
+---
 
-#### Install FFmpeg
-1. Download FFmpeg from [ffmpeg.org](https://ffmpeg.org/download.html)
-2. Extract and add to system PATH
-3. Verify installation: `ffmpeg -version`
+## 🐛 Bug Report / Feature Request
 
-#### Install Python Dependencies
+Found a bug? Have a suggestion?
+
+👉 **[Open an Issue on GitHub](https://github.com/TayyabAliDogar/ultimate-video-downloader/issues/new)**
+
+Please include:
+- Windows version
+- Steps to reproduce
+- Error message / screenshot
+- Video URL (if applicable)
+
+---
+
+## 🛠️ Run from Source Code
+
 ```bash
+# Clone repository
+git clone https://github.com/TayyabAliDogar/ultimate-video-downloader.git
+cd ultimate-video-downloader
+
+# Install dependencies
 pip install customtkinter yt-dlp pillow
-```
 
-Or use requirements.txt:
-```bash
-pip install -r requirements.txt
-```
-
-#### Run the Application
-```bash
+# Run
 python main.py
 ```
 
----
-
-## 🚀 Usage
-
-### Basic Download
-1. Launch the application
-2. Paste a video URL (or copy it - auto-detection will fill it automatically!)
-3. Select desired quality
-4. Click **"⬇ DOWNLOAD NOW"**
-5. Videos are saved to: `C:\Users\YourName\Downloads\VideoDownloader\`
-
-### Batch Download
-1. Go to the **Download** tab
-2. Paste multiple URLs in the **BATCH** text area (one per line)
-3. Click **"📦 ADD BATCH TO QUEUE"**
-4. All videos will be queued and downloaded
-
-### Schedule Downloads
-1. Paste a video URL
-2. Click **"⏰ SCHEDULE DOWNLOAD"**
-3. Choose a time (30 min, 1 hour, 2 hours, or Tonight 11PM)
-4. The download will start automatically at the scheduled time
-
-### Download Thumbnails Only
-1. Go to the **🖼 Thumbnails** tab
-2. Paste a video URL
-3. Click **"🖼 Get Thumbnail"**
-4. Preview the thumbnail
-5. Click **"💾 Save Thumbnail to Downloads"**
-
-### Using Cookies for HD Quality
-1. Install the Chrome extension: **"Get cookies.txt LOCALLY"**
-2. Visit YouTube and export cookies.txt
-3. Save it to: `C:\Users\YourName\cookies.txt`
-4. Go to **⚙ Settings** tab
-5. Verify the cookie path
-6. You'll see **"✔ HD Quality Enabled!"**
+**Requirements:**
+- Python 3.10+
+- FFmpeg (place in `bin/` folder)
+- Windows 10 / 11
 
 ---
 
-## ⚙️ Settings
+## 📦 Build EXE from Source
 
-### Clipboard Auto-Detect
-- Toggle automatic URL detection from clipboard
-- When enabled, copying a video URL auto-fills the download field
+```bash
+pip install pyinstaller
 
-### Speed Limiter
-- Limit download speed from 1-10 MB/s
-- Set to 0 for unlimited speed
-
-### Concurrent Downloads
-- Download 1-5 videos simultaneously
-- Higher values use more bandwidth and system resources
-
-### Theme
-- **Dark Mode** - Default dark theme
-- **Light Mode** - Light theme
-- **System** - Follow system theme
-
----
-
-## 🐛 Bug Reports & Issues
-
-Found a bug or have a feature request? Please report it on our [GitHub Issues](../../issues) page.
-
-When reporting bugs, please include:
-- Windows version
-- Python version (if running from source)
-- Steps to reproduce
-- Error messages or screenshots
-- Video URL (if applicable)
+pyinstaller --noconfirm --onefile --windowed \
+  --add-data "bin;bin" \
+  --collect-all customtkinter \
+  --copy-metadata customtkinter \
+  --hidden-import PIL \
+  --collect-all PIL \
+  --name "UltimateVideoDownloader" \
+  main.py
+```
 
 ---
 
 ## 📋 Requirements
 
-### For Executable Version
-- Windows 10 or Windows 11
-- FFmpeg (auto-included in some builds)
-
-### For Source Version
-- Python 3.10 or higher
-- customtkinter >= 5.2.0
-- yt-dlp >= 2024.1.0
-- Pillow >= 10.0.0
-- FFmpeg (system installation)
+| Component | Version |
+|-----------|---------|
+| Windows | 10 / 11 |
+| Python | 3.10+ |
+| customtkinter | ≥ 5.2.0 |
+| yt-dlp | ≥ 2024.1.0 |
+| Pillow | ≥ 10.0.0 |
+| FFmpeg | Bundled ✅ |
 
 ---
 
-## 🔧 Building from Source
-
-### Create Executable with PyInstaller
-```bash
-pip install pyinstaller
-pyinstaller --onefile --windowed --icon=icon.ico main.py
-```
-
-The executable will be in the `dist/` folder.
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License**.
+## 📄 License
 
 ```
-MIT License
-
+MIT License — Free to use, modify and distribute.
 Copyright (c) 2026 Ultimate Video Downloader
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 ```
-
----
-
-## 🙏 Credits
-
-Built with:
-- **[CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)** - Modern UI framework
-- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** - Video download engine
-- **[Pillow](https://python-pillow.org/)** - Image processing
-- **[FFmpeg](https://ffmpeg.org/)** - Video/audio processing
 
 ---
 
 ## ⚠️ Disclaimer
 
-This tool is for **personal use only**. Please respect copyright laws and the terms of service of the websites you download from. The developers are not responsible for any misuse of this application.
-
-Always ensure you have the right to download content before doing so.
-
----
-
-## 💖 Support
-
-If you find this project useful, please consider:
-- ⭐ Starring this repository
-- 🐛 Reporting bugs
-- 💡 Suggesting new features
-- 📢 Sharing with others
+This tool is for **personal use only**.
+Please respect copyright laws and platform terms of service.
+The developers are not responsible for any misuse.
 
 ---
 
-**Made with ❤️ by the Ultimate Video Downloader Team**
+<div align="center">
 
-**Version 5.1 ULTRA - FREE Forever**
+## 💖 Support This Project
+
+If you find this useful, please:
+
+⭐ **[Star on GitHub](https://github.com/TayyabAliDogar/ultimate-video-downloader)** — helps others discover it!
+
+🐛 **[Report Bugs](https://github.com/TayyabAliDogar/ultimate-video-downloader/issues)** — help make it better!
+
+📢 **Share with friends** — spread the word!
+
+<br>
+
+**Made with ❤️ — v5.1 ULTRA — FREE Forever**
+
+*Built with Python · CustomTkinter · yt-dlp · FFmpeg*
+
+</div>
