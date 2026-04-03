@@ -8,7 +8,8 @@
       "Bash(py -3.12 --version)",
       "Bash(py -3.11 --version)",
       "Bash(winget install:*)",
-      "Bash(python main.py)"
+      "Bash(python main.py)",
+      "Bash(git push:*)"
     ]
   }
 }
