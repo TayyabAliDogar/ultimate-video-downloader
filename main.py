@@ -311,55 +311,66 @@ class App(ctk.CTk):
         self._build_body()
 
     def _build_header(self):
-        hdr = ctk.CTkFrame(self, fg_color=CARD, corner_radius=0, height=72)
+         # ── Header height thoda bada kiya taake sab fit ho ──
+        hdr = ctk.CTkFrame(self, fg_color=CARD, corner_radius=0, height=80)
         hdr.grid(row=0, column=0, sticky="ew")
         hdr.grid_columnconfigure(1, weight=1)
         hdr.grid_propagate(False)
-
+ 
+        # ── Logo ──
         logo = ctk.CTkFrame(hdr, fg_color=BTN_DL, corner_radius=14, width=46, height=46)
-        logo.grid(row=0, column=0, padx=(20,14), pady=13)
+        logo.grid(row=0, column=0, padx=(20, 14), pady=17)
         logo.grid_propagate(False)
         ctk.CTkLabel(logo, text="⬇", font=ctk.CTkFont(size=24, weight="bold"),
                      text_color="white").place(relx=0.5, rely=0.5, anchor="center")
-
+ 
+        # ── Title + subtitle ──
         tc = ctk.CTkFrame(hdr, fg_color="transparent")
-        tc.grid(row=0, column=1, sticky="w")
+        tc.grid(row=0, column=1, sticky="w", pady=17)
         ctk.CTkLabel(tc, text="Ultimate Video Downloader",
-                     font=ctk.CTkFont(size=22, weight="bold"), text_color=TEXT).pack(anchor="w")
+                     font=ctk.CTkFont(size=20, weight="bold"),
+                     text_color=TEXT).pack(anchor="w")
         ctk.CTkLabel(tc,
-                     text="YouTube  ·  Instagram  ·  TikTok  ·  Facebook  ·  Twitter  ·  1000+ sites",
-                     font=ctk.CTkFont(size=11), text_color=DIM).pack(anchor="w")
-
+                     text="YouTube · Instagram · TikTok · Facebook · Twitter · 1000+ sites",
+                     font=ctk.CTkFont(size=10), text_color=DIM).pack(anchor="w")
+ 
+        # ── RIGHT SIDE — fixed layout ──
         right = ctk.CTkFrame(hdr, fg_color="transparent")
-        right.grid(row=0, column=2, padx=20)
-
-        # FFmpeg status in header
+        right.grid(row=0, column=2, padx=(10, 16), pady=10, sticky="e")
+ 
+        # Row 1: FFmpeg status + stats — ek hi line mein
+        row1 = ctk.CTkFrame(right, fg_color="transparent")
+        row1.pack(anchor="e", pady=(0, 3))
+ 
         ffmpeg_ok = FFMPEG_LOCATION is not None
         ffmpeg_text = "⚡ FFmpeg Ready" if ffmpeg_ok else "⚠ FFmpeg Missing"
         ffmpeg_color = ACCENT2 if ffmpeg_ok else DANGER
-        ctk.CTkLabel(right, text=ffmpeg_text,
+        ctk.CTkLabel(row1, text=ffmpeg_text,
                      font=ctk.CTkFont(size=10, weight="bold"),
-                     text_color=ffmpeg_color).pack(anchor="e", pady=(0,2))
-
-        self.stats_label = ctk.CTkLabel(right, text="📥 0 downloads today",
-                                         font=ctk.CTkFont(size=10), text_color=SUBTEXT)
-        self.stats_label.pack(anchor="e", pady=(0,4))
-
-        cb_row = ctk.CTkFrame(right, fg_color="transparent")
-        cb_row.pack(anchor="e")
+                     text_color=ffmpeg_color).pack(side="left", padx=(0, 12))
+ 
+        self.stats_label = ctk.CTkLabel(row1, text="📥 0 today · 0 total",
+                                        font=ctk.CTkFont(size=10),
+                                        text_color=SUBTEXT)
+        self.stats_label.pack(side="left")
+ 
+        # Row 2: Clipboard toggle + version badges
+        row2 = ctk.CTkFrame(right, fg_color="transparent")
+        row2.pack(anchor="e", pady=(0, 0))
+ 
         self.cb_toggle = ctk.CTkSwitch(
-            cb_row, text="📋 Auto-detect",
+            row2, text="📋 Auto-detect",
             font=ctk.CTkFont(size=10),
             text_color=ACCENT2 if self._clipboard_enabled else DIM,
             fg_color=DIM, progress_color=ACCENT2,
             width=46, height=22,
             command=self._toggle_clipboard)
-        self.cb_toggle.pack(side="left", padx=(0,10))
+        self.cb_toggle.pack(side="left", padx=(0, 8))
         if self._clipboard_enabled:
             self.cb_toggle.select()
-
+ 
         for text, color in [(" v5.1 ", BTN_DL), (" FREE ", ACCENT2)]:
-            ctk.CTkLabel(cb_row, text=text,
+            ctk.CTkLabel(row2, text=text,
                          font=ctk.CTkFont(size=9, weight="bold"),
                          fg_color=color, corner_radius=5,
                          text_color="white").pack(side="left", padx=2)
