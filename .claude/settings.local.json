@@ -9,7 +9,10 @@
       "Bash(py -3.11 --version)",
       "Bash(winget install:*)",
       "Bash(python main.py)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
